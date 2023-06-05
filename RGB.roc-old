@@ -1,0 +1,28 @@
+# interface RGB exposes [RGB, fromRGB, fromHex] imports [Utils]
+
+# RGB : { red : U8, green : U8, blue : U8 }
+
+# fromRGB = \red, green, blue -> { red: red, green: green, blue: blue }
+
+fromHex = \hex ->
+    hexDigits = hex |> Utils.trimLeft "#" |> Str.graphemes |> List.map Utils.parseHexDigit
+    when hexDigits is
+        [Ok r, Ok g, Ok b] -> Ok (fromRGB (17 * r) (17 * g) (17 * b))
+        [Ok rSixteens, Ok rUnits, Ok gSixteens, Ok gUnits, Ok bSixteens, Ok bUnits] ->
+            red = 16 * rSixteens + rUnits
+            green = 16 * gSixteens + gUnits
+            blue = 16 * bSixteens + bUnits
+            Ok (fromRGB red green blue)
+        _ -> Err InvalidHexHue
+
+# expect
+#     out = fromHex "#FF00FF"
+#     out == Ok { red: 255, green: 0, blue: 255 }
+
+# expect
+#     out = fromHex "FF00FF"
+#     out == Ok { red: 255, green: 0, blue: 255 }
+
+# expect
+#     out = fromHex "F0F"
+#     out == Ok { red: 255, green: 0, blue: 255 }

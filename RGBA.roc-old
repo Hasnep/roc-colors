@@ -1,0 +1,28 @@
+# interface RGBA exposes [RGBA, fromRGB, fromRGBA, fromHex] imports [Utils, RGB]
+
+# RGBA : { hue : Hue.Hue, alpha : U8 }
+
+# fromRGBA = \r, g, b, a -> { red:r,green:g,blue:b, alpha: a }
+
+# fromRGB = \r, g, b -> fromRGBA r g b 255
+
+# fromHex = \hex ->
+#     hexDigits = hex |> Utils.trimLeft "#" |> Str.graphemes |> List.map Utils.parseHexDigit
+#     when hexDigits is
+#         [Ok r, Ok g, Ok b, Ok a] -> Ok (fromRGBA (17 * r) (17 * g) (17 * b) (17 * a))
+#         [Ok rSixteens, Ok rUnits, Ok gSixteens, Ok gUnits, Ok bSixteens, Ok bUnits, Ok aSixteens, Ok aUnits] ->
+#             red = 16 * rSixteens + rUnits
+#             green = 16 * gSixteens + gUnits
+#             blue = 16 * bSixteens + bUnits
+#             alpha = 16 * aSixteens + aUnits
+#             Ok (fromRGBA red green blue alpha)
+
+#         _ -> Err InvalidHexColour
+
+# expect
+#     out = fromHex "FF00FFFF"
+#     out == Ok { hue: { red: 255, green: 0, blue: 255 }, alpha: 255 }
+
+# expect
+#     out = fromHex "F0FF"
+#     out == Ok { hue: { red: 255, green: 0, blue: 255 }, alpha: 255 }
